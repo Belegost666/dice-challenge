@@ -127,9 +127,9 @@
     <h2>💖 Dice Challenge 💖</h2>
     
     <div id="gameBoard" class="game-board"></div>
-    <div id="probDisplay" class="prob-display">Chance : 0 %</div>
+    <div id="probDisplay" class="prob-display">Chance : 0%</div>
 
-    <button id="btnRoll" class="main-btn" onclick="startSequence()">Lancer la manche</button>
+    <button id="btnRoll" class="main-btn" onclick="startSequence()">Start the round</button>
 
     <div id="timerDisplay" class="timer-display">00:00</div>
 
@@ -141,9 +141,9 @@
         <div id="resultVal" class="result-val">--</div>
     </div>
 
-    <div id="statusLog" class="status-msg">Prêt pour aujourd'hui ?</div>
+    <div id="statusLog" class="status-msg">Ready for today?</div>
 
-    <button class="secondary-btn" onclick="resetGame()">Nouveau Cycle (Reset)</button>
+    <button class="secondary-btn" onclick="resetGame()">New Cycle (Reset)</button>
 </div>
 
 <script>
@@ -182,7 +182,7 @@
     }
 
     function resetGame() {
-        if (confirm("Recommencer un nouveau cycle à 1 dé ?")) {
+        if (confirm("Restart a new cycle with 1 die?")) {
             localStorage.clear();
             setupFirstTime();
             location.reload();
@@ -213,7 +213,7 @@
         if (isLocked || diceValues.length === 0) return;
         isLocked = true;
         document.getElementById('btnRoll').disabled = true;
-        document.getElementById('statusLog').innerText = "Mélange des dés...";
+        document.getElementById('statusLog').innerText = "Rolling the dice...";
         
         const diceElements = document.querySelectorAll('.die');
         let totalSum = 0;
@@ -246,7 +246,7 @@
         
         area.style.display = "block";
         successZone.style.width = chance + "%";
-        document.getElementById('statusLog').innerText = "Calcul du destin...";
+        document.getElementById('statusLog').innerText = "Fate calculation in progress…";
 
         const target = Math.floor(Math.random() * 100) + 1;
         const anim = cursor.animate([
@@ -259,11 +259,11 @@
             const sessionTime = Math.min(Math.round(5 + (rawSum / 100) * 15), 20);
             
             if (won) {
-                document.getElementById('statusLog').innerHTML = `🎯 CIBLE ATTEINTE !<br>Masturbe-toi pendant <span style="color:var(--pink)">${sessionTime} min</span>.<br><span style="color:var(--gold)">ORGASME AUTORISÉ !</span>`;
+                document.getElementById('statusLog').innerHTML = `🎯 TARGET REACHED!<br>Masturbate for <span style="color:var(--pink)">${sessionTime} min</span>.<br><span style="color:var(--gold)">ORGASM ALLOWED!</span>`;
                 diceValues = []; 
                 localStorage.setItem('diceReserve', JSON.stringify(diceValues));
             } else {
-                document.getElementById('statusLog').innerHTML = `❌ ÉCHEC.<br>Masturbe-toi pendant <span style="color:var(--pink)">${sessionTime} min</span>.<br><span style="color:var(--pink)">INTERDICTION DE JOUIR.</span>`;
+                document.getElementById('statusLog').innerHTML = `❌ FAILURE.<br>Masturbate for <span style="color:var(--pink)">${sessionTime} min</span>.<br><span style="color:var(--pink)">ORGASM FORBIDDEN!</span>`;
             }
             
             setTimeout(() => startChrono(sessionTime, won), 3000);
@@ -292,8 +292,8 @@
                 clearInterval(timerInterval);
                 display.style.display = "none";
                 document.getElementById('statusLog').innerHTML = canCum ? 
-                    "<h3 style='color:var(--gold)'>✨ TEMPS ÉCOULÉ ✨<br>ORGASME AUTORISÉ ! 💦</h3>" : 
-                    "<h3 style='color:var(--pink)'>🛑 TEMPS ÉCOULÉ 🛑<br>Interdiction de jouir.</h3>";
+                    "<h3 style='color:var(--gold)'>✨ TIME’S UP ✨<br>ORGASM ALLOWED! 💦</h3>" : 
+                    "<h3 style='color:var(--pink)'>🛑 TIME’S UP 🛑<br>Orgasm forbidden.</h3>";
                 isLocked = false;
                 renderDice();
             }
