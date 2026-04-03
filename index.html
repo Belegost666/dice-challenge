@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -15,7 +15,7 @@
             --danger: #ff4d4d;
         }
 
-        /* Optimisation globale pour mobile */
+        /* Mobile optimization */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body { 
@@ -35,7 +35,7 @@
             padding: 20px; 
             border-radius: 25px; 
             width: 100%; 
-            max-width: 400px; /* Taille idéale smartphone */
+            max-width: 400px; 
             text-align: center; 
             box-shadow: 0 8px 25px rgba(255, 105, 180, 0.15); 
             border: 2px solid var(--gold);
@@ -45,11 +45,41 @@
             color: var(--pink); 
             text-transform: uppercase; 
             letter-spacing: 1px; 
-            margin: 0 0 20px 0; 
+            margin: 0 0 15px 0; 
             font-size: 1.4rem;
         }
+
+        /* Collapsible Rules Section */
+        .rules-container {
+            margin-bottom: 20px;
+            text-align: left;
+            background: #fff9fc;
+            border-radius: 15px;
+            border: 1px solid var(--pink);
+            overflow: hidden;
+        }
+        .rules-header {
+            padding: 12px 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            color: var(--pink);
+            font-size: 0.9rem;
+            user-select: none;
+        }
+        .rules-content {
+            padding: 0 15px 15px 15px;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            display: none;
+        }
+        .rules-content p { margin: 8px 0 4px 0; font-weight: bold; color: var(--text-dark); }
+        .rules-content ul { padding-left: 18px; margin: 0; }
+        .rules-content li { margin-bottom: 6px; }
         
-        /* Grille de dés responsive */
+        /* Game Board */
         .game-board { 
             border: 2px dashed var(--pink); 
             border-radius: 15px; 
@@ -77,7 +107,6 @@
 
         .prob-display { font-size: 1.4rem; color: var(--gold); margin: 10px 0; font-weight: bold; }
 
-        /* Jauge adaptée au petit écran */
         .tirage-container { display: none; margin: 20px 0; width: 100%; }
         .jauge-wrapper { 
             width: 100%; height: 30px; background: #222; border-radius: 15px; 
@@ -100,7 +129,6 @@
             border-radius: 15px; border: 2px solid var(--pink);
         }
         
-        /* Gros boutons tactiles */
         .main-btn { 
             background: linear-gradient(135deg, var(--gold) 0%, var(--pink) 100%); 
             color: white; border: none; padding: 16px; border-radius: 50px; 
@@ -125,6 +153,39 @@
 
 <div class="container">
     <h2>💖 Dice Challenge 💖</h2>
+
+    <div class="rules-container">
+        <div class="rules-header" onclick="toggleRules()">
+            📜 GAME RULES <span id="rulesArrow">▼</span>
+        </div>
+        <div id="rulesContent" class="rules-content">
+            <p>1. The Dice Reserve</p>
+            <ul>
+                <li>You begin your cycle with only 1 eight-sided die.</li>
+                <li>Every day after 06:00 AM, a new die is automatically added.</li>
+                <li>The more you wait, the more dice you get, increasing your chances.</li>
+            </ul>
+            <p>2. The Objective</p>
+            <ul>
+                <li>The sum of all your dice determines your winning chance (%).</li>
+                <li>Ex: 3 dice totaling 18 = 18% chance. 100+ = Guaranteed win.</li>
+            </ul>
+            <p>3. The Draw</p>
+            <ul>
+                <li>A gauge appears. If the cursor stops in the colored zone: Victory! Otherwise: Failure.</li>
+            </ul>
+            <p>4. Consequences</p>
+            <ul>
+                <li>Regardless of the result, you must masturbate for the given duration.</li>
+                <li><b>VICTORY:</b> Allowed to cum at the end. Reserve resets.</li>
+                <li><b>FAILURE:</b> Forbidden to cum. You keep your dice for tomorrow.</li>
+            </ul>
+            <p>5. New Cycle</p>
+            <ul>
+                <li>Reset at any time to start back with 1 die.</li>
+            </ul>
+        </div>
+    </div>
     
     <div id="gameBoard" class="game-board"></div>
     <div id="probDisplay" class="prob-display">Chance : 0%</div>
@@ -155,6 +216,18 @@
     let diceValues = [];
     let isLocked = false;
     let timerInterval = null;
+
+    function toggleRules() {
+        const content = document.getElementById('rulesContent');
+        const arrow = document.getElementById('rulesArrow');
+        if (content.style.display === "block") {
+            content.style.display = "none";
+            arrow.innerText = "▼";
+        } else {
+            content.style.display = "block";
+            arrow.innerText = "▲";
+        }
+    }
 
     function initApp() {
         const savedDice = localStorage.getItem('diceReserve');
@@ -246,7 +319,7 @@
         
         area.style.display = "block";
         successZone.style.width = chance + "%";
-        document.getElementById('statusLog').innerText = "Fate calculation in progress…";
+        document.getElementById('statusLog').innerText = "Fate calculation...";
 
         const target = Math.floor(Math.random() * 100) + 1;
         const anim = cursor.animate([
@@ -259,11 +332,11 @@
             const sessionTime = Math.min(Math.round(5 + (rawSum / 100) * 15), 20);
             
             if (won) {
-                document.getElementById('statusLog').innerHTML = `🎯 TARGET REACHED!<br>Masturbate for <span style="color:var(--pink)">${sessionTime} min</span>.<br><span style="color:var(--gold)">ORGASM ALLOWED!</span>`;
+                document.getElementById('statusLog').innerHTML = `🎯 TARGET REACHED!<br>Session: <span style="color:var(--pink)">${sessionTime} min</span>.<br><span style="color:var(--gold)">ORGASM ALLOWED!</span>`;
                 diceValues = []; 
                 localStorage.setItem('diceReserve', JSON.stringify(diceValues));
             } else {
-                document.getElementById('statusLog').innerHTML = `❌ FAILURE.<br>Masturbate for <span style="color:var(--pink)">${sessionTime} min</span>.<br><span style="color:var(--pink)">ORGASM FORBIDDEN!</span>`;
+                document.getElementById('statusLog').innerHTML = `❌ FAILURE.<br>Session: <span style="color:var(--pink)">${sessionTime} min</span>.<br><span style="color:var(--pink)">ORGASM FORBIDDEN!</span>`;
             }
             
             setTimeout(() => startChrono(sessionTime, won), 3000);
@@ -293,7 +366,7 @@
                 display.style.display = "none";
                 document.getElementById('statusLog').innerHTML = canCum ? 
                     "<h3 style='color:var(--gold)'>✨ TIME’S UP ✨<br>ORGASM ALLOWED! 💦</h3>" : 
-                    "<h3 style='color:var(--pink)'>🛑 TIME’S UP 🛑<br>Orgasm forbidden.</h3>";
+                    "<h3 style='color:var(--pink)'>🛑 TIME’S UP 🛑<br>Forbidden to cum.</h3>";
                 isLocked = false;
                 renderDice();
             }
