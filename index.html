@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="robots" content="noindex, nofollow">
     <title>Dice Challenge</title>
     <style>
         :root { 
@@ -150,6 +151,24 @@
     </style>
 </head>
 <body>
+
+<script>
+    (function() {
+        const password = "dice"; // Change "TON_MOT_DE_PASSE" par celui de ton choix
+        const auth = localStorage.getItem('app_auth');
+
+        if (auth !== 'true') {
+            const entry = prompt("Access Restricted. Please enter the password found on the Reddit post:");
+            if (entry === password) {
+                localStorage.setItem('app_auth', 'true');
+            } else {
+                alert("Incorrect password.");
+                document.body.innerHTML = ""; // Efface tout le contenu de la page
+                window.stop(); // Arrête le chargement du reste du script
+            }
+        }
+    })();
+</script>
 
 <div class="container">
     <h2>💖 Dice Challenge 💖</h2>
