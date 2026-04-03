@@ -247,11 +247,11 @@
             const sessionTime = Math.min(Math.round(5 + (rawSum / 100) * 15), 20);
             
             if (won) {
-                document.getElementById('statusLog').innerHTML = `🎯 CIBLE ATTEINTE !<br>Session : <span style="color:var(--pink)">${sessionTime} min</span>.<br><span style="color:var(--gold)">RÉCOMPENSE : Jouissance autorisée !</span>`;
+                document.getElementById('statusLog').innerHTML = `🎯 CIBLE ATTEINTE !<br>Masturbe-toi pendant <span style="color:var(--pink)">${sessionTime} min</span>.<br><span style="color:var(--gold)">RÉCOMPENSE : Orgasme autorisé !</span>`;
                 diceValues = []; 
                 localStorage.setItem('diceReserve', JSON.stringify(diceValues));
             } else {
-                document.getElementById('statusLog').innerHTML = `❌ ÉCHEC DU TIRAGE.<br>Session : <span style="color:var(--pink)">${sessionTime} min</span>.<br><span style="color:var(--pink)">INTERDICTION de jouir.</span>`;
+                document.getElementById('statusLog').innerHTML = `❌ ÉCHEC DU TIRAGE.<br>Masturbe-toi pendant <span style="color:var(--pink)">${sessionTime} min</span>.<br><span style="color:var(--pink)">INTERDICTION de jouir.</span>`;
             }
             
             setTimeout(() => startChrono(sessionTime, won), 3000);
