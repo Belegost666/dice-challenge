@@ -2,8 +2,8 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dice Challenge - Pink & Gold</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dice Challenge Mobile</title>
     <style>
         :root { 
             --gold: #d4af37; 
@@ -15,94 +15,110 @@
             --danger: #ff4d4d;
         }
 
+        /* Optimisation globale pour mobile */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
         body { 
-            font-family: 'Segoe UI', sans-serif; 
+            font-family: 'Segoe UI', Roboto, sans-serif; 
             background: var(--pink-soft); 
             color: var(--text-dark); 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
-            padding: 20px; 
-            min-height: 100vh; 
+            padding: 15px; 
             margin: 0;
+            min-height: 100vh;
         }
 
         .container { 
             background: var(--white); 
-            padding: 30px; 
-            border-radius: 30px; 
+            padding: 20px; 
+            border-radius: 25px; 
             width: 100%; 
-            max-width: 450px; 
+            max-width: 400px; /* Taille idéale smartphone */
             text-align: center; 
-            box-shadow: 0 10px 30px rgba(255, 105, 180, 0.15); 
+            box-shadow: 0 8px 25px rgba(255, 105, 180, 0.15); 
             border: 2px solid var(--gold);
         }
 
-        h2 { color: var(--pink); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 25px; font-weight: 300; }
+        h2 { 
+            color: var(--pink); 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            margin: 0 0 20px 0; 
+            font-size: 1.4rem;
+        }
         
+        /* Grille de dés responsive */
         .game-board { 
-            border: 2px dashed var(--pink); border-radius: 20px; padding: 20px; margin-bottom: 20px; 
-            background: var(--white); min-height: 120px; display: flex; flex-wrap: wrap; 
-            justify-content: center; align-content: center; gap: 15px;
+            border: 2px dashed var(--pink); 
+            border-radius: 15px; 
+            padding: 15px; 
+            margin-bottom: 15px; 
+            background: #fff; 
+            min-height: 100px; 
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+            gap: 10px;
+            justify-items: center;
         }
 
         .die { 
-            width: 65px; height: 65px; 
+            width: 55px; 
+            height: 55px; 
             background-size: contain; 
             background-repeat: no-repeat; 
             background-position: center; 
-            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.1));
-            background-color: transparent;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
         }
 
         .die.rolling { animation: shake 0.1s infinite linear; }
         @keyframes shake { 0% { transform: rotate(5deg); } 50% { transform: rotate(-5deg); } }
 
-        .prob-display { font-size: 1.6rem; color: var(--gold); margin: 10px 0; font-weight: bold; }
+        .prob-display { font-size: 1.4rem; color: var(--gold); margin: 10px 0; font-weight: bold; }
 
-        .tirage-container { display: none; margin: 25px 0; }
+        /* Jauge adaptée au petit écran */
+        .tirage-container { display: none; margin: 20px 0; width: 100%; }
         .jauge-wrapper { 
-            width: 100%; height: 35px; background: #222; border-radius: 10px; 
+            width: 100%; height: 30px; background: #222; border-radius: 15px; 
             position: relative; border: 2px solid var(--gold); overflow: visible; 
         }
         .zone-succes { 
             height: 100%; background: linear-gradient(90deg, var(--gold), var(--pink)); 
-            width: 0%; position: absolute; left: 0; top: 0; border-radius: 8px 0 0 8px;
+            width: 0%; position: absolute; left: 0; top: 0; border-radius: 12px 0 0 12px;
             transition: width 0.8s ease-out; 
         }
         .curseur { 
-            position: absolute; top: -8px; left: 0%; width: 6px; height: 51px; 
-            background: var(--white); box-shadow: 0 0 15px var(--gold-light), 0 0 5px #000; 
+            position: absolute; top: -5px; left: 0%; width: 5px; height: 40px; 
+            background: var(--white); box-shadow: 0 0 10px var(--gold-light); 
             z-index: 10; border-radius: 3px;
         }
 
         .timer-display { 
-            font-size: 2.8rem; color: var(--pink); margin: 15px 0; display: none; 
-            font-weight: bold; background: var(--pink-soft); padding: 15px; 
+            font-size: 2.5rem; color: var(--pink); margin: 15px 0; display: none; 
+            font-weight: bold; background: var(--pink-soft); padding: 10px; 
             border-radius: 15px; border: 2px solid var(--pink);
         }
         
+        /* Gros boutons tactiles */
         .main-btn { 
             background: linear-gradient(135deg, var(--gold) 0%, var(--pink) 100%); 
-            color: white; border: none; padding: 18px; border-radius: 50px; 
-            cursor: pointer; width: 100%; font-size: 1.2rem; font-weight: bold; 
-            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3); transition: all 0.3s;
-            margin-bottom: 15px;
+            color: white; border: none; padding: 16px; border-radius: 50px; 
+            cursor: pointer; width: 100%; font-size: 1.1rem; font-weight: bold; 
+            box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3); transition: transform 0.1s;
+            margin-bottom: 10px;
         }
+        .main-btn:active { transform: scale(0.98); }
+        .main-btn:disabled { background: #ccc; box-shadow: none; }
 
         .secondary-btn {
-            background: none; color: var(--text-dark); border: 1px solid #ccc;
-            padding: 10px 20px; border-radius: 20px; cursor: pointer; font-size: 0.9rem;
-            transition: all 0.2s; opacity: 0.7;
+            background: none; color: #888; border: 1px solid #ddd;
+            padding: 12px; border-radius: 25px; cursor: pointer; font-size: 0.85rem;
+            width: 100%; margin-top: 10px;
         }
-        .secondary-btn:hover { opacity: 1; background: #eee; }
 
-        .reset-btn { color: var(--danger); border-color: var(--danger); margin-top: 10px; }
-
-        .main-btn:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
-
-        .result-val { font-size: 3.5rem; color: var(--pink); font-weight: bold; margin-top: 5px;}
-        .status-msg { font-size: 1.1rem; margin-top: 15px; color: var(--text-dark); font-weight: bold; min-height: 3em; line-height: 1.4; }
+        .result-val { font-size: 3rem; color: var(--pink); font-weight: bold; margin-top: 5px;}
+        .status-msg { font-size: 1rem; margin-top: 15px; color: var(--text-dark); font-weight: bold; min-height: 3.5em; line-height: 1.3; }
     </style>
 </head>
 <body>
@@ -125,11 +141,9 @@
         <div id="resultVal" class="result-val">--</div>
     </div>
 
-    <div id="statusLog" class="status-msg">Prête ?</div>
+    <div id="statusLog" class="status-msg">Prête pour aujourd'hui ?</div>
 
-    <hr style="width: 80%; border: 0; border-top: 1px solid #eee; margin: 20px 0;">
-    
-    <button class="secondary-btn reset-btn" onclick="resetGame()">✨ Nouveau Cycle (Reset)</button>
+    <button class="secondary-btn" onclick="resetGame()">Nouveau Cycle (Reset)</button>
 </div>
 
 <script>
@@ -151,7 +165,6 @@
             setupFirstTime();
         } else {
             diceValues = JSON.parse(savedDice);
-            // Vérification quotidienne (6h du matin)
             const todayStr = now.toDateString();
             if (lastUpdateStr !== todayStr && now.getHours() >= 6) {
                 diceValues.push(8);
@@ -169,10 +182,10 @@
     }
 
     function resetGame() {
-        if (confirm("Voulez-vous vraiment vider la réserve et recommencer avec 1 seul dé ?")) {
+        if (confirm("Recommencer un nouveau cycle à 1 dé ?")) {
             localStorage.clear();
             setupFirstTime();
-            location.reload(); // Recharge la page pour tout remettre à zéro proprement
+            location.reload();
         }
     }
 
@@ -200,7 +213,7 @@
         if (isLocked || diceValues.length === 0) return;
         isLocked = true;
         document.getElementById('btnRoll').disabled = true;
-        document.getElementById('statusLog').innerText = "Lancement des dés...";
+        document.getElementById('statusLog').innerText = "Mélange des dés...";
         
         const diceElements = document.querySelectorAll('.die');
         let totalSum = 0;
@@ -212,7 +225,7 @@
                 diceElements[i].style.backgroundImage = `url('${diceImages[temp]}')`;
             }, 80);
 
-            await new Promise(r => setTimeout(r, 800));
+            await new Promise(r => setTimeout(r, 700));
             
             clearInterval(rollInt);
             const val = Math.floor(Math.random() * 8) + 1;
@@ -222,8 +235,7 @@
             document.getElementById('probDisplay').innerText = `Chance : ${Math.min(totalSum, 100)}%`;
         }
 
-        const chance = Math.min(totalSum, 100);
-        setTimeout(() => runGauge(chance, totalSum), 500);
+        setTimeout(() => runGauge(Math.min(totalSum, 100), totalSum), 400);
     }
 
     function runGauge(chance, rawSum) {
@@ -234,7 +246,7 @@
         
         area.style.display = "block";
         successZone.style.width = chance + "%";
-        document.getElementById('statusLog').innerText = "Tirage de la chance...";
+        document.getElementById('statusLog').innerText = "Calcul du destin...";
 
         const target = Math.floor(Math.random() * 100) + 1;
         const anim = cursor.animate([
@@ -247,11 +259,11 @@
             const sessionTime = Math.min(Math.round(5 + (rawSum / 100) * 15), 20);
             
             if (won) {
-                document.getElementById('statusLog').innerHTML = `🎯 CIBLE ATTEINTE !<br>Masturbe-toi pendant <span style="color:var(--pink)">${sessionTime} min</span>.<br><span style="color:var(--gold)">RÉCOMPENSE : Orgasme autorisé !</span>`;
+                document.getElementById('statusLog').innerHTML = `🎯 CIBLE ATTEINTE !<br>Masturbe-toi pendant <span style="color:var(--pink)">${sessionTime} min</span>.<br><span style="color:var(--gold)">ORGASME AUTORISÉ !</span>`;
                 diceValues = []; 
                 localStorage.setItem('diceReserve', JSON.stringify(diceValues));
             } else {
-                document.getElementById('statusLog').innerHTML = `❌ ÉCHEC DU TIRAGE.<br>Masturbe-toi pendant <span style="color:var(--pink)">${sessionTime} min</span>.<br><span style="color:var(--pink)">INTERDICTION de jouir.</span>`;
+                document.getElementById('statusLog').innerHTML = `❌ ÉCHEC.<br>Masturbe-toi pendant <span style="color:var(--pink)">${sessionTime} min</span>.<br><span style="color:var(--pink)">INTERDICTION DE JOUIR.</span>`;
             }
             
             setTimeout(() => startChrono(sessionTime, won), 3000);
@@ -281,7 +293,7 @@
                 display.style.display = "none";
                 document.getElementById('statusLog').innerHTML = canCum ? 
                     "<h3 style='color:var(--gold)'>✨ TEMPS ÉCOULÉ ✨<br>ORGASME AUTORISÉ ! 💦</h3>" : 
-                    "<h3 style='color:var(--pink)'>🛑 TEMPS ÉCOULÉ 🛑<br>Arrêt immédiat. Interdiction de jouir.</h3>";
+                    "<h3 style='color:var(--pink)'>🛑 TEMPS ÉCOULÉ 🛑<br>Interdiction de jouir.</h3>";
                 isLocked = false;
                 renderDice();
             }
