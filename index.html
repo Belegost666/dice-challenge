@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dice Challenge</title>
+    <title>Dice Challenge - Pink & Gold</title>
     <style>
         :root { 
             --gold: #d4af37; 
@@ -12,6 +12,7 @@
             --pink-soft: #fff0f6;
             --white: #ffffff;
             --text-dark: #4a4a4a;
+            --danger: #ff4d4d;
         }
 
         body { 
@@ -45,17 +46,13 @@
             justify-content: center; align-content: center; gap: 15px;
         }
 
-        /* STYLE DES DÉS : SEULEMENT L'IMAGE */
         .die { 
             width: 65px; height: 65px; 
             background-size: contain; 
             background-repeat: no-repeat; 
             background-position: center; 
             filter: drop-shadow(0 3px 6px rgba(0,0,0,0.1));
-            /* On enlève la couleur de fond et le texte */
             background-color: transparent;
-            color: transparent; 
-            user-select: none;
         }
 
         .die.rolling { animation: shake 0.1s infinite linear; }
@@ -90,15 +87,19 @@
             color: white; border: none; padding: 18px; border-radius: 50px; 
             cursor: pointer; width: 100%; font-size: 1.2rem; font-weight: bold; 
             box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3); transition: all 0.3s;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
-        .main-btn:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
 
-        #btnResetChrono { 
-            background: var(--white); color: var(--pink); border: 1px solid var(--pink);
-            padding: 10px; border-radius: 20px; cursor: pointer; display: none; width: 100%;
-            font-weight: bold; margin-top: 10px;
+        .secondary-btn {
+            background: none; color: var(--text-dark); border: 1px solid #ccc;
+            padding: 10px 20px; border-radius: 20px; cursor: pointer; font-size: 0.9rem;
+            transition: all 0.2s; opacity: 0.7;
         }
+        .secondary-btn:hover { opacity: 1; background: #eee; }
+
+        .reset-btn { color: var(--danger); border-color: var(--danger); margin-top: 10px; }
+
+        .main-btn:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
 
         .result-val { font-size: 3.5rem; color: var(--pink); font-weight: bold; margin-top: 5px;}
         .status-msg { font-size: 1.1rem; margin-top: 15px; color: var(--text-dark); font-weight: bold; min-height: 3em; line-height: 1.4; }
@@ -113,7 +114,6 @@
     <div id="probDisplay" class="prob-display">Chance : 0%</div>
 
     <button id="btnRoll" class="main-btn" onclick="startSequence()">Lancer la manche</button>
-    <button id="btnResetChrono" onclick="skipChrono()">Relancer un tirage</button>
 
     <div id="timerDisplay" class="timer-display">00:00</div>
 
@@ -126,6 +126,10 @@
     </div>
 
     <div id="statusLog" class="status-msg">Prête ?</div>
+
+    <hr style="width: 80%; border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+    
+    <button class="secondary-btn reset-btn" onclick="resetGame()">✨ Nouveau Cycle (Reset)</button>
 </div>
 
 <script>
@@ -144,13 +148,10 @@
         const now = new Date();
 
         if (savedDice === null) {
-            // Premier lancement propre
-            diceValues = [8]; 
-            localStorage.setItem('diceReserve', JSON.stringify(diceValues));
-            localStorage.setItem('lastDailyUpdate', now.toDateString());
+            setupFirstTime();
         } else {
             diceValues = JSON.parse(savedDice);
-            // Vérification quotidienne
+            // Vérification quotidienne (6h du matin)
             const todayStr = now.toDateString();
             if (lastUpdateStr !== todayStr && now.getHours() >= 6) {
                 diceValues.push(8);
@@ -161,13 +162,27 @@
         renderDice();
     }
 
+    function setupFirstTime() {
+        diceValues = [8]; 
+        localStorage.setItem('diceReserve', JSON.stringify(diceValues));
+        localStorage.setItem('lastDailyUpdate', new Date().toDateString());
+    }
+
+    function resetGame() {
+        if (confirm("Voulez-vous vraiment vider la réserve et recommencer avec 1 seul dé ?")) {
+            localStorage.clear();
+            setupFirstTime();
+            location.reload(); // Recharge la page pour tout remettre à zéro proprement
+        }
+    }
+
     function renderDice() {
         const board = document.getElementById('gameBoard');
         board.innerHTML = "";
         diceValues.forEach((val) => {
             const d = document.createElement('div');
             d.className = 'die';
-            d.style.backgroundImage = `url('${diceImages[val]}')`;
+            d.style.backgroundImage = `url('${diceImages[val] || diceImages[8]}')`;
             board.appendChild(d);
         });
         document.getElementById('btnRoll').disabled = (diceValues.length === 0 || isLocked);
@@ -179,15 +194,6 @@
         const chance = Math.min(sum, 100);
         document.getElementById('probDisplay').innerText = `Chance : ${chance}%`;
         return chance;
-    }
-
-    function skipChrono() {
-        clearInterval(timerInterval);
-        isLocked = false;
-        document.getElementById('timerDisplay').style.display = "none";
-        document.getElementById('btnResetChrono').style.display = "none";
-        document.getElementById('statusLog').innerText = "Prête ?";
-        renderDice();
     }
 
     async function startSequence() {
@@ -228,7 +234,7 @@
         
         area.style.display = "block";
         successZone.style.width = chance + "%";
-        document.getElementById('statusLog').innerText = "Tirage...";
+        document.getElementById('statusLog').innerText = "Tirage de la chance...";
 
         const target = Math.floor(Math.random() * 100) + 1;
         const anim = cursor.animate([
@@ -241,11 +247,11 @@
             const sessionTime = Math.min(Math.round(5 + (rawSum / 100) * 15), 20);
             
             if (won) {
-                document.getElementById('statusLog').innerHTML = `🎯 CIBLE ATTEINTE !<br>Masturbation : <span style="color:var(--pink)">${sessionTime} min</span>.<br><span style="color:var(--gold)">RÉCOMPENSE : Orgasme autorisé !</span>`;
+                document.getElementById('statusLog').innerHTML = `🎯 CIBLE ATTEINTE !<br>Session : <span style="color:var(--pink)">${sessionTime} min</span>.<br><span style="color:var(--gold)">RÉCOMPENSE : Jouissance autorisée !</span>`;
                 diceValues = []; 
                 localStorage.setItem('diceReserve', JSON.stringify(diceValues));
             } else {
-                document.getElementById('statusLog').innerHTML = `❌ ÉCHEC DU TIRAGE.<br>Masturbation : <span style="color:var(--pink)">${sessionTime} min</span>.<br><span style="color:var(--pink)">INTERDICTION de jouir.</span>`;
+                document.getElementById('statusLog').innerHTML = `❌ ÉCHEC DU TIRAGE.<br>Session : <span style="color:var(--pink)">${sessionTime} min</span>.<br><span style="color:var(--pink)">INTERDICTION de jouir.</span>`;
             }
             
             setTimeout(() => startChrono(sessionTime, won), 3000);
@@ -256,7 +262,6 @@
         const display = document.getElementById('timerDisplay');
         document.getElementById('tirageArea').style.display = "none";
         display.style.display = "block";
-        document.getElementById('btnResetChrono').style.display = "block"; 
         
         let seconds = minutes * 60;
         const updateText = () => {
@@ -274,10 +279,9 @@
             if (seconds <= 0) {
                 clearInterval(timerInterval);
                 display.style.display = "none";
-                document.getElementById('btnResetChrono').style.display = "none";
                 document.getElementById('statusLog').innerHTML = canCum ? 
-                    "<h3 style='color:var(--gold)'>✨ TEMPS ÉCOULÉ ✨<br>ORGASME AUTORISÉ ! 💦</h3>" : 
-                    "<h3 style='color:var(--pink)'>🛑 TEMPS ÉCOULÉ 🛑<br>Interdiction de jouir.</h3>";
+                    "<h3 style='color:var(--gold)'>✨ TEMPS ÉCOULÉ ✨<br>LIBÉRATION AUTORISÉE ! 💦</h3>" : 
+                    "<h3 style='color:var(--pink)'>🛑 TEMPS ÉCOULÉ 🛑<br>Arrêt immédiat. Pas de plaisir final.</h3>";
                 isLocked = false;
                 renderDice();
             }
