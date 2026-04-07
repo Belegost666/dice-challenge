@@ -28,8 +28,6 @@
         }
 
         h2 { color: var(--pink); text-transform: uppercase; margin: 0 0 15px 0; font-size: 1.4rem; }
-
-        /* Next Die Countdown Style */
         .next-die-info { font-size: 0.75rem; color: #888; margin-bottom: 10px; font-style: italic; }
 
         .rules-container { margin-bottom: 20px; text-align: left; background: #fff9fc; border-radius: 15px; border: 1px solid var(--pink); overflow: hidden; }
@@ -43,23 +41,27 @@
 
         .prob-display { font-size: 1.4rem; color: var(--gold); margin: 10px 0; font-weight: bold; }
         
-        .timer-display { font-size: 2.5rem; color: var(--pink); margin: 15px 0; display: none; font-weight: bold; background: var(--pink-soft); padding: 10px; border-radius: 15px; border: 2px solid var(--pink); }
+        /* Gauge & Cursor Styles */
+        .tirage-container { display: none; margin: 20px 0; width: 100%; }
+        .jauge-wrapper { width: 100%; height: 30px; background: #222; border-radius: 15px; position: relative; border: 2px solid var(--gold); overflow: visible; }
+        .zone-succes { height: 100%; background: linear-gradient(90deg, var(--gold), var(--pink)); width: 0%; position: absolute; left: 0; top: 0; border-radius: 12px 0 0 12px; transition: width 0.5s; }
+        .curseur { position: absolute; top: -5px; left: 0%; width: 5px; height: 40px; background: var(--white); box-shadow: 0 0 10px var(--gold-light); z-index: 10; border-radius: 3px; }
+        .result-val { font-size: 3rem; color: var(--pink); font-weight: bold; margin-top: 5px; }
 
+        .timer-display { font-size: 2.5rem; color: var(--pink); margin: 15px 0; display: none; font-weight: bold; background: var(--pink-soft); padding: 10px; border-radius: 15px; border: 2px solid var(--pink); }
         .main-btn { background: linear-gradient(135deg, var(--gold) 0%, var(--pink) 100%); color: white; border: none; padding: 16px; border-radius: 50px; cursor: pointer; width: 100%; font-size: 1.1rem; font-weight: bold; margin-bottom: 10px; }
         .main-btn:disabled { background: #ccc; box-shadow: none; }
 
-        /* Skip Button */
         #skipBtn { display: none; background: #f0f0f0; color: #888; border: 1px solid #ddd; padding: 8px; border-radius: 15px; cursor: pointer; font-size: 0.8rem; width: 50%; margin: 0 auto 10px; }
-
         .tribute-btn { display: none; align-items: center; justify-content: center; gap: 8px; background: #FFDD00; color: #000; border: none; padding: 12px 24px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 0.9rem; margin: 15px auto; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         .secondary-btn { background: none; color: #888; border: 1px solid #ddd; padding: 10px; border-radius: 25px; cursor: pointer; font-size: 0.75rem; width: 100%; margin-top: 10px; }
+        .status-msg { font-size: 1rem; margin-top: 15px; font-weight: bold; min-height: 3em; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h2>💖 Dice Challenge 💖</h2>
-    
     <div id="nextDieCountdown" class="next-die-info">Next die in: --h --m</div>
 
     <div class="rules-container">
@@ -77,6 +79,14 @@
     <div id="probDisplay" class="prob-display">Chance : 0%</div>
     
     <button id="btnRoll" class="main-btn" onclick="startSequence()">Start Round</button>
+
+    <div id="tirageArea" class="tirage-container">
+        <div class="jauge-wrapper">
+            <div id="successZone" class="zone-succes"></div>
+            <div id="cursor" class="curseur"></div>
+        </div>
+        <div id="resultVal" class="result-val">--</div>
+    </div>
 
     <div id="timerDisplay" class="timer-display">00:00</div>
     <button id="skipBtn" onclick="skipTimer()">⏩ Skip Timer</button>
@@ -101,20 +111,12 @@
         document.getElementById('rulesArrow').innerText = isVisible ? "▼" : "▲";
     }
 
-    // Logic for daily die and countdown
     function updateDailyLogic() {
         const now = new Date();
-        const saved = localStorage.getItem('diceReserve');
         const lastTs = localStorage.getItem('lastUpdateTs');
-        
-        // Target is 06:00 AM. If we are before 6am today, the target is 6am TODAY. 
-        // If we are after 6am today, the target is 6am TOMORROW.
         let targetDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 6, 0, 0);
-        if (now >= targetDate) {
-            targetDate.setDate(targetDate.getDate() + 1);
-        }
+        if (now >= targetDate) targetDate.setDate(targetDate.getDate() + 1);
 
-        // Add die if it's 6am and we haven't added one yet today
         const todaySixAM = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 6, 0, 0);
         if (now >= todaySixAM && (!lastTs || new Date(parseInt(lastTs)) < todaySixAM)) {
             diceValues.push(8);
@@ -123,7 +125,6 @@
             renderDice();
         }
 
-        // Update countdown text
         const diff = targetDate - now;
         const h = Math.floor(diff / (1000 * 60 * 60));
         const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
@@ -141,7 +142,7 @@
         }
         renderDice();
         updateDailyLogic();
-        setInterval(updateDailyLogic, 60000); // Refresh every minute
+        setInterval(updateDailyLogic, 60000);
     }
 
     function renderDice() {
@@ -170,7 +171,6 @@
         
         let totalSum = 0;
         const diceElements = document.querySelectorAll('.die');
-
         for (let i = 0; i < diceElements.length; i++) {
             diceElements[i].classList.add('rolling');
             const rollInt = setInterval(() => {
@@ -185,31 +185,44 @@
             totalSum += val;
             document.getElementById('probDisplay').innerText = `Chance : ${Math.min(totalSum, 100)}%`;
         }
-        
         setTimeout(() => runGauge(Math.min(totalSum, 100), totalSum), 400);
     }
 
     function runGauge(chance, rawSum) {
-        document.getElementById('statusLog').innerText = "Calculating fate...";
-        const target = Math.floor(Math.random() * 100) + 1;
+        const area = document.getElementById('tirageArea');
+        const successZone = document.getElementById('successZone');
+        const cursor = document.getElementById('cursor');
+        const resultVal = document.getElementById('resultVal');
         
-        // Simuler un délai de calcul
-        setTimeout(() => {
-            const won = target <= chance;
-            const sessionTime = Math.min(Math.round(5 + (rawSum / 100) * 15), 20);
-            globalCanCum = won;
+        area.style.display = "block";
+        successZone.style.width = chance + "%";
+        document.getElementById('statusLog').innerText = "Fate calculation...";
 
+        const target = Math.floor(Math.random() * 100) + 1;
+        const anim = cursor.animate([
+            { left: '0%' }, { left: '100%' }, { left: '0%' }, { left: '100%' }, { left: target + '%' }
+        ], { duration: 3000, easing: 'cubic-bezier(0.2, 0, 0.2, 1)', fill: 'forwards' });
+
+        anim.onfinish = () => {
+            resultVal.innerText = target;
+            const won = target <= chance;
+            globalCanCum = won;
+            const sessionTime = Math.min(Math.round(5 + (rawSum / 100) * 15), 20);
+            
             if (won) {
-                document.getElementById('statusLog').innerHTML = `🎯 TARGET REACHED (${target}%)!<br>Session: <span style="color:var(--pink)">${sessionTime} min</span>.<br><span style="color:var(--gold)">ORGASM ALLOWED!</span>`;
+                document.getElementById('statusLog').innerHTML = `🎯 TARGET REACHED!<br>Session: <span style="color:var(--pink)">${sessionTime} min</span>.<br><span style="color:var(--gold)">ORGASM ALLOWED!</span>`;
                 diceValues = []; 
                 localStorage.setItem('diceReserve', JSON.stringify(diceValues));
                 document.getElementById('tributeBtn').style.display = "inline-flex";
             } else {
-                document.getElementById('statusLog').innerHTML = `❌ FAILURE (${target}%)!<br>Session: <span style="color:var(--pink)">${sessionTime} min</span>.<br><span style="color:var(--pink)">ORGASM FORBIDDEN!</span>`;
+                document.getElementById('statusLog').innerHTML = `❌ FAILURE.<br>Session: <span style="color:var(--pink)">${sessionTime} min</span>.<br><span style="color:var(--pink)">ORGASM FORBIDDEN!</span>`;
                 document.getElementById('tributeBtn').style.display = "none";
             }
-            startChrono(sessionTime);
-        }, 1000);
+            setTimeout(() => {
+                area.style.display = "none";
+                startChrono(sessionTime);
+            }, 3000);
+        };
     }
 
     function startChrono(minutes) {
@@ -217,14 +230,12 @@
         const skip = document.getElementById('skipBtn');
         display.style.display = "block";
         skip.style.display = "block";
-        
         let seconds = minutes * 60;
         const updateText = () => {
             let m = Math.floor(seconds / 60);
             let s = seconds % 60;
             display.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
         };
-        
         updateText();
         if(timerInterval) clearInterval(timerInterval);
         timerInterval = setInterval(() => {
@@ -234,9 +245,7 @@
         }, 1000);
     }
 
-    function skipTimer() {
-        if(confirm("Skip the rest of the session?")) endTimer();
-    }
+    function skipTimer() { if(confirm("Skip the rest of the session?")) endTimer(); }
 
     function endTimer() {
         clearInterval(timerInterval);
